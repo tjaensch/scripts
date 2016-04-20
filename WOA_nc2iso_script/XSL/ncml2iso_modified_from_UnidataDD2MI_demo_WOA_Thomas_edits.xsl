@@ -31,10 +31,10 @@
 	<xsl:variable name="http_Cnt" select="count(netcdf/group[@name='Dataservicelinks']/group[@name='services']/attribute[@name='http_service'])"/>
 	<xsl:variable name="ftp_Cnt" select="count(netcdf/group[@name='Dataservicelinks']/group[@name='services']/attribute[@name='ftp_service'])"/>
 	<xsl:variable name="pathCnt" select="count(netcdf/path)"/>
-	<xsl:variable name="Pathfinderthredds" select="concat('http://data.nodc.noaa.gov/thredds/catalog/', netcdf/path, 'catalog.html?dataset=', netcdf/path, netcdf/title, '.nc')"/>
-	<xsl:variable name="Pathfinderhttp" select="concat('http://data.nodc.noaa.gov/',netcdf/path,netcdf/title,'.nc')"/>
-	<xsl:variable name="Pathfinderopendap" select="concat('http://data.nodc.noaa.gov/opendap/', netcdf/path, netcdf/title,'.nc.html')"/>
-	<xsl:variable name="Pathfinderftp" select="concat('ftp://ftp.nodc.noaa.gov/pub/data.nodc//',netcdf/path,netcdf/title,'.nc')"/>
+	<xsl:variable name="Pathfinderthredds" select="'http://data.nodc.noaa.gov/thredds/catalog/woa/'"/>
+	<xsl:variable name="Pathfinderhttp" select="'http://data.nodc.noaa.gov/woa/'"/>
+	<xsl:variable name="Pathfinderopendap" select="'http://data.nodc.noaa.gov/opendap/woa/contents.html'"/>
+	<xsl:variable name="Pathfinderftp" select="'ftp://ftp.nodc.noaa.gov/pub/data.nodc//woa'"/>
 	<xsl:variable name="wmscount" select="count(netcdf/wmslink)"/>
 	<xsl:variable name="wcscount" select="count(netcdf/wmslink)"/>
 	
@@ -54,10 +54,10 @@
 	
 <!-- Extent Search Fields: 17 possible -->
 
-	<xsl:variable name="geospatial_lat_min" select="netcdf/attribute[@name='southernmost_latitude']/@value"/>
-	<xsl:variable name="geospatial_lat_max" select="netcdf/attribute[@name='northernmost_latitude']/@value"/>
-	<xsl:variable name="geospatial_lon_min" select="netcdf/attribute[@name='westernmost_longitude']/@value"/>
-	<xsl:variable name="geospatial_lon_max" select="netcdf/attribute[@name='easternmost_longitude']/@value"/>
+	<xsl:variable name="geospatial_lat_min" select="netcdf/attribute[@name='geospatial_lat_min']/@value"/>
+	<xsl:variable name="geospatial_lat_max" select="netcdf/attribute[@name='geospatial_lat_max']/@value"/>
+	<xsl:variable name="geospatial_lon_min" select="netcdf/attribute[@name='geospatial_lon_min']/@value"/>
+	<xsl:variable name="geospatial_lon_max" select="netcdf/attribute[@name='geospatial_lon_max']/@value"/>
 	
 	
 	<xsl:variable name="timeStart" select="netcdf/attribute[@name='time_coverage_start']/@value"/>
@@ -148,7 +148,7 @@
       </xsl:attribute>
 			<gmd:fileIdentifier>
 				<xsl:call-template name="writeCharacterString">
-					<xsl:with-param name="stringToWrite" select="concat($datasetname,'.',$title, '.nc')"/>
+					<xsl:with-param name="stringToWrite" select="concat($datasetname,'.',$title)"/>
 				</xsl:call-template>
 			</gmd:fileIdentifier>
 			<gmd:language>
@@ -270,7 +270,7 @@
 						<gmd:CI_Citation>
 							<gmd:title>
 								<xsl:call-template name="writeCharacterString">
-									<xsl:with-param name="stringToWrite" select="concat($title, '.nc')"/>
+									<xsl:with-param name="stringToWrite" select="concat($datasetname,'.',$title)"/>
 								</xsl:call-template>
 							</gmd:title>
 							<xsl:choose>
@@ -354,7 +354,7 @@
 									<xsl:with-param name="individualName" select="$contributorName"/>
 									<xsl:with-param name="organisationName" select="'NCEI'"/>
 									<xsl:with-param name="email" select="'NCEI.info@noaa.gov'"/>
-									<xsl:with-param name="url" select="'http://www.nodc.noaa.gov/SatelliteData/Pathfinder/'"/>
+									<xsl:with-param name="url" select="'http://www.nodc.noaa.gov/SatelliteData/pathfinder4km/'"/>
 									<xsl:with-param name="roleCode" select="netcdf/attribute[@name='contributor_role']/@value"/>
 								</xsl:call-template>
 							</xsl:if>
@@ -646,17 +646,7 @@
 				</gmd:MD_DataIdentification>
 			</gmd:identificationInfo>
 
-
-			<!--NCEI added for data access http, ftp urls-->
-			<xsl:if test="'1'">
-				<xsl:call-template name="writeService">
-					<xsl:with-param name="serviceID" select="'NODCCloud'"/>
-					<xsl:with-param name="serviceTypeName" select="'Cloud'"/>
-					<xsl:with-param name="serviceOperationName" select="'Cloud Client Access'"/>
-					<xsl:with-param name="operationURL" select="$Pathfindercloud"/>
-					<!--xsl:with-param name="operationNode" select="/netcdf/group[@name='THREDDSMetadata']/group[@name='services']/attribute[@name='opendap_service']" as="node()"/-->
-				</xsl:call-template>
-			</xsl:if>
+			<!-- Removed cloud access section here, which WOA is not -->
 			
 			<xsl:if test="$Pathfinderhttp">
 				<xsl:call-template name="writeService">

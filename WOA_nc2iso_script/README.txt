@@ -1,4 +1,4 @@
-Convert WOA netCDF .nc file to ISO metadata .xml - 4/14/2016
+Convert WOA netCDF .nc file to ISO metadata .xml - 4/20/2016
 
 1. On ammonite, CD into script directory
 
@@ -39,3 +39,34 @@ This wiki also provide introduction about the xslt that ncISO uses. This xslt wa
 
 ISO metadata
 https://geo-ide.noaa.gov/wiki/index.php?title=ISO_19115_and_19115-2_CodeList_Dictionaries 
+
+--------------
+
+WOA XSLT modifications 
+
+First review comments for the WOA metadata 
+
+In the output metadata
+
+line 4: <gmd:fileIdentifier>
+    <gco:CharacterString>CoRTAD..nc</gco:CharacterString>
+  </gmd:fileIdentifier>
+needs to add <title>file title</title> in the ncml 
+  
+line 146:  <gmd:title>
+     <gco:CharacterString>.nc</gco:CharacterString>
+   </gmd:title>
+   
+The same as 1.
+
+line 151: <gco:DateTime>2011-09-28T</gco:DateTime>
+Remove the ending 'T'.
+
+line 419 to line 430: need to add the coordinates values; please look in the xslt for the part of reading the lat long max and min values from the ncml to make sure it reads the correct values. 
+
+line 448 to line 558: remove the whole section (this is section is for the cloud access, which WOA is not)
+
+line 652, 763, 874, 1203, and 1223: add the path and title to the URL
+needs to add the <title> and <path> fields in the ncml.
+
+The <title> and <path> fields were added in the GHRSST ncml by the program ghrsst_process6.sh.
