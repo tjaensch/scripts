@@ -7,6 +7,9 @@ function error_exit
 	exit 1
 }
 
+#WOA13 collection metadata template file
+isocofile="/nodc/web/data.nodc/htdocs/nodc/archive/metadata/approved/iso/0114815.xml"
+
 echo -n "Enter an .nc file name (just the name without the file extension) > "
 read filename
 
@@ -22,13 +25,17 @@ fi
 
 #Replace the second line in the ncml file with <netcdf>
 if sed -i '2 c\ \<netcdf\>' $filename.ncml; then
-	xsltproc XSL/ncml2iso_modified_from_UnidataDD2MI_demo_WOA_Thomas_edits.xsl $filename.ncml > output/$filename.xml
+	#Apply modified UnidataDD2MI XSL to work with WOA data
+	xsltproc XSL/ncml2iso_modified_from_UnidataDD2MI_demo_WOA_Thomas_edits.xsl $filename.ncml > $filename.xml
+	#Apply collection metadata
+	xsltproc --stringparam collFile $isocofile XSL/granule.xsl $filename.xml > output/$filename.xml
 else 
 	error_exit "Something went wrong with xsltproc, program exiting."
 fi
 
 rm out.nc
 rm $filename.ncml
+rm $filename.xml
 
 echo "$filename.xml successfully written to output directory."
 
