@@ -1,4 +1,4 @@
-Convert WOA netCDF .nc file to ISO metadata .xml - 4/20/2016
+Convert WOA netCDF .nc file to ISO metadata .xml - 5/6/2016
 
 1. On ammonite, CD into script directory
 

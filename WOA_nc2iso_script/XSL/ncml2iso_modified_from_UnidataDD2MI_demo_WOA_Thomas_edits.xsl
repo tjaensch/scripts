@@ -31,10 +31,10 @@
 	<xsl:variable name="http_Cnt" select="count(netcdf/group[@name='Dataservicelinks']/group[@name='services']/attribute[@name='http_service'])"/>
 	<xsl:variable name="ftp_Cnt" select="count(netcdf/group[@name='Dataservicelinks']/group[@name='services']/attribute[@name='ftp_service'])"/>
 	<xsl:variable name="pathCnt" select="count(netcdf/path)"/>
-	<xsl:variable name="Pathfinderthredds" select="'http://data.nodc.noaa.gov/thredds/catalog/woa/'"/>
-	<xsl:variable name="Pathfinderhttp" select="'http://data.nodc.noaa.gov/woa/'"/>
-	<xsl:variable name="Pathfinderopendap" select="'http://data.nodc.noaa.gov/opendap/woa/contents.html'"/>
-	<xsl:variable name="Pathfinderftp" select="'ftp://ftp.nodc.noaa.gov/pub/data.nodc//woa'"/>
+	<xsl:variable name="Pathfinderthredds" select="concat('http://data.nodc.noaa.gov/thredds/catalog/', netcdf/path, 'catalog.html')"/>
+	<xsl:variable name="Pathfinderhttp" select="concat('http://data.nodc.noaa.gov/',netcdf/path,netcdf/title,'.nc')"/>
+	<xsl:variable name="Pathfinderopendap" select="concat('http://data.nodc.noaa.gov/opendap/', netcdf/path)"/>
+	<xsl:variable name="Pathfinderftp" select="concat('ftp://ftp.nodc.noaa.gov/pub/data.nodc//',netcdf/path,netcdf/title,'.nc')"/>
 	<xsl:variable name="wmscount" select="count(netcdf/wmslink)"/>
 	<xsl:variable name="wcscount" select="count(netcdf/wmslink)"/>
 	
@@ -936,9 +936,9 @@
 					<gmd:date>
 						<gmd:CI_Date>
 							<gmd:date>
-								<gco:DateTime>
+								<gco:Date>
 									<xsl:value-of select="substring(translate($dateToWrite,' ','T'),0,11)"/>
-								</gco:DateTime>
+								</gco:Date>
 							</gmd:date>
 							<gmd:dateType>
 								<gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="$dateType">
@@ -1174,12 +1174,12 @@ Main NCEI website providing links to access data and data services.
 								<xsl:value-of select="substring($dimensionResolution,3,1)"/>
 							</gco:Measure>
 						</xsl:when>
-						<xsl:when test="$dimensionUnits and $dimensionResolution">
+						<!-- <xsl:when test="$dimensionUnits and $dimensionResolution">
 							<gco:Measure>
 								<xsl:attribute name="uom"><xsl:value-of select="$dimensionUnits"/></xsl:attribute>
 								<xsl:value-of select="$dimensionResolution"/>
-							</gco:Measure>
-						</xsl:when>
+							</gco:Measure>	
+						</xsl:when> -->
 						<xsl:when test="$dimensionUnits and not($dimensionResolution)">
 							<xsl:attribute name="gco:nilReason">missing</xsl:attribute>
 						</xsl:when>
