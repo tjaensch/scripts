@@ -34,7 +34,7 @@
 	<xsl:variable name="Pathfinderthredds" select="concat('http://data.nodc.noaa.gov/thredds/catalog/', netcdf/path, 'catalog.html')"/>
 	<xsl:variable name="Pathfinderhttp" select="concat('http://data.nodc.noaa.gov/',netcdf/path,netcdf/title,'.nc')"/>
 	<xsl:variable name="Pathfinderopendap" select="concat('http://data.nodc.noaa.gov/opendap/', netcdf/path)"/>
-	<xsl:variable name="Pathfinderftp" select="concat('ftp://ftp.nodc.noaa.gov/pub/data.nodc//',netcdf/path,netcdf/title,'.nc')"/>
+	<xsl:variable name="Pathfinderftp" select="concat('ftp://ftp.nodc.noaa.gov/pub/data.nodc/',netcdf/path,netcdf/title,'.nc')"/>
 	<xsl:variable name="wmscount" select="count(netcdf/wmslink)"/>
 	<xsl:variable name="wcscount" select="count(netcdf/wmslink)"/>
 	

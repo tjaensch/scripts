@@ -1,14 +1,12 @@
-Convert WOA netCDF .nc file to ISO metadata .xml - 5/6/2016
+Convert WOA netCDF .nc files to ISO metadata .xml - 5/13/2016
 
 1. On ammonite, CD into script directory
 
-2. Add source .nc file you want to convert into script directory (use the .nc file that's already there or other example files from the parent directory)
+2. Add WOA13 source .nc files you want to convert into script directory 
 
-3. Run "bash WOA_nc2iso_thomas_script.sh"
+3. Run "bash WOA_findandprocessfiles_thomas_script.sh" (this script calls the other script in the folder, WOA_nc2iso_thomas_script.sh, to do the actual file conversion)
 
-4. Follow shell prompts
-
-If everything worked out, the script will write an ISO .xml file based on the .nc input file to the output directory.
+If everything worked out, the script will write ISO .xml files based on the .nc input files to the output directory.
 
 
 -----
