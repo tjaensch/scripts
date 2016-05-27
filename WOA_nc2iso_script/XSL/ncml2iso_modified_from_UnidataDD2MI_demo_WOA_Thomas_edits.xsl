@@ -1,46 +1,35 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gmi="http://www.isotc211.org/2005/gmi"  xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gsr="http://www.isotc211.org/2005/gsr" xmlns:gss="http://www.isotc211.org/2005/gss" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:date="http://exslt.org/dates-and-times" xmlns:str="http://exslt.org/strings" exclude-result-prefixes='date'>
+	<!-- Updated stylesheet for OneStop project according to OneStop guidelines, removed unused variables, etc.; thomas.jaensch@noaa.gov spring 2016 -->
 	<!--Original stylesheet was from ncISO software http://www.ngdc.noaa.gov/eds/tds/; the xslt was modified by NCEI-MD to work directly with netCDF data; yuanjie.li@noaa.gov 3/1/2013-->
 	<xsl:output method="xml" encoding="UTF-8" indent="yes"/>
 	<xsl:variable name="stylesheetVersion" select="'2.21'"/>
 	<xsl:strip-space elements="*"/>
 	<xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'"/>
 	<xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
-	<xsl:variable name="globalAttributeCnt" select="count(netcdf/attribute)"/>
 	<xsl:variable name="physicalMeasurementCnt" select="count(netcdf/variable[not(contains((translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')),'_qc'))])"/>
 	<xsl:variable name="qualityInformationCnt" select="count(netcdf/variable[contains((translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')),'_qc')])"/>
-	<xsl:variable name="variableAttributeCnt" select="count(netcdf/variable/attribute)"/>
 	<xsl:variable name="standardNameCnt" select="count(netcdf/variable/attribute[@name='standard_name'])"/>
-	<xsl:variable name="dimensionCnt" select="count(netcdf/dimension)"/>
 	
 <!-- Identifier Fields: 4 possible -->
 	<!--NCEI-MD modified to Pathfinder data-->
 	<xsl:variable name="id" select="netcdf/attribute[@name='title']/@value"/>
 	<xsl:variable name="title" select="netcdf/attribute[@name='title']/@value"/>
-	<xsl:variable name="datasetname" select="'WOA'"/>	
-	<xsl:variable name="identifierNameSpace" select="netcdf/attribute[@name='naming_authority']/@value"/>
-	<xsl:variable name="metadataConvention" select="netcdf/attribute[@name='Conventions']/@value"/>
-	<xsl:variable name="metadataLink" select="netcdf/attribute[@name='Metadata_Link']/@value"/>
+	<xsl:variable name="datasetname" select="'WOA13'"/>	
 
 	<!-- Service Fields: 4 possible -->
 	<!--Need to edit based on the Pathfinder data-->
 	<xsl:variable name="thredds_netcdfsubsetCnt" select="count(netcdf/group[@name='Dataservicelinks']/group[@name='services']/attribute[@name='nccs_service'])"/>
-	<xsl:variable name="thredds_opendapCnt" select="count(netcdf/group[@name='Dataservicelinks']/group[@name='services']/attribute[@name='opendap_service'])"/>
 	
 <!--NCEI-MD added for extra service links -->
-	<xsl:variable name="http_Cnt" select="count(netcdf/group[@name='Dataservicelinks']/group[@name='services']/attribute[@name='http_service'])"/>
-	<xsl:variable name="ftp_Cnt" select="count(netcdf/group[@name='Dataservicelinks']/group[@name='services']/attribute[@name='ftp_service'])"/>
-	<xsl:variable name="pathCnt" select="count(netcdf/path)"/>
-	<xsl:variable name="Pathfinderthredds" select="concat('http://data.nodc.noaa.gov/thredds/catalog/', netcdf/path, 'catalog.html')"/>
-	<xsl:variable name="Pathfinderhttp" select="concat('http://data.nodc.noaa.gov/',netcdf/path,netcdf/title,'.nc')"/>
-	<xsl:variable name="Pathfinderopendap" select="concat('http://data.nodc.noaa.gov/opendap/', netcdf/path)"/>
+	<xsl:variable name="Pathfinderthredds" select="concat('http://data.nodc.noaa.gov/thredds/catalog/', netcdf/path, 'catalog.html?dataset=',netcdf/path,netcdf/title,'.nc')"/>
+	<xsl:variable name="Pathfinderhttp" select="concat('http://data.nodc.noaa.gov/', netcdf/path,netcdf/title,'.nc')"/>
+	<xsl:variable name="Pathfinderopendap" select="concat('http://data.nodc.noaa.gov/', netcdf/path)"/>
 	<xsl:variable name="Pathfinderftp" select="concat('ftp://ftp.nodc.noaa.gov/pub/data.nodc/',netcdf/path,netcdf/title,'.nc')"/>
 	<xsl:variable name="wmscount" select="count(netcdf/wmslink)"/>
 	<xsl:variable name="wcscount" select="count(netcdf/wmslink)"/>
 	
 	<!--Added for Cloud pilot project-->
-	<xsl:variable name="Pathfindercloud" select="concat(netcdf/cloudpath,'')"/>
-	<xsl:variable name="serviceTotal" select="'7'"/>
 	<xsl:variable name="serviceMax">7</xsl:variable>
 
 	<!-- Text Search Fields: 7 possible -->
@@ -62,8 +51,6 @@
 	
 	<xsl:variable name="timeStart" select="netcdf/attribute[@name='time_coverage_start']/@value"/>
 	<xsl:variable name="timeEnd" select="netcdf/attribute[@name='time_coverage_end']/@value"/>
-	<!--xsl:variable name="timeStartCnt" select="count($start_time)"/-->
-	<!--xsl:variable name="timeEndCnt" select="count($stop_time)"/-->
 	<xsl:variable name="verticalMin" select="netcdf/group[@name='CFMetadata']/attribute[@name='geospatial_vertical_min']/@value"/>
 	<xsl:variable name="verticalMax" select="netcdf/attribute[@name='geospatial_vertical_max']/@value"/>
 	<xsl:variable name="geospatial_lat_units" select="//attribute[@name='geospatial_lat_units']/@value"/>
@@ -86,11 +73,6 @@
 
 	<!--  Extent Totals -->
 	<xsl:variable name="extentTotal" select=" count($timeStart) + count($timeEnd)"/>
-	<xsl:variable name="extentMax">8</xsl:variable>
-	<!--xsl:variable name="otherExtentTotal" select="count($geospatial_lat_resolution) + count($geospatial_lat_units) + count($geospatial_lon_resolution) + count($geospatial_lon_units) + count($timeResolution) + count($timeDuration) + count($verticalUnits) + count($verticalResolution) + count($verticalPositive)"/-->
-	<xsl:variable name="otherExtentMax">9</xsl:variable>
-
-
 
 	<!-- Responsible Party Fields: 14 possible -->
 	<!--Need to update based on Pathfinder-->
@@ -101,88 +83,54 @@
 	<xsl:variable name="modifiedDate" select="netcdf/attribute[@name='date_modified']/@value"/>
 	<xsl:variable name="issuedDate" select="netcdf/attribute[@name='date_issued']/@value"/>
 	<!--updated by NCEI-MD, all the contact inforation for granule level data is using NCEI-MD's customer service info-->
-	<xsl:variable name="institution" select="'US DOC; NOAA; National Centers for Envrionmental Information'"/>
+	<xsl:variable name="institution" select="'US DOC; NOAA; National Centers for Environmental Information'"/>
 	<xsl:variable name="project" select="netcdf/attribute[@name='project']/@value"/>
 	<xsl:variable name="acknowledgment" select="netcdf/attribute[@name='acknowledgment']/@value"/>
 	<xsl:variable name="dateCnt" select="count($creatorDate) + count($modifiedDate) + count($issuedDate)"/>
 	<xsl:variable name="creatorTotal" select="'1'"/>
 
-	<xsl:variable name="creatorMax">9</xsl:variable>
-
-
 	   <!-- Data contributor  -->
 	<xsl:variable name="contributorName"  select="netcdf/attribute[@name='contributor_name']/@value"/>
 	<xsl:variable name="contributorRole"  select="netcdf/attribute[@name='contributor_role']/@value"/>
 	<xsl:variable name="contributorTotal"  select="count($contributorName) + count($contributorRole)"/>
-	<xsl:variable name="contributorMax">2</xsl:variable>
-
 
 	<!-- Data publisher -->
-	<xsl:variable name="publisherName"  select="'National Centers for Envrionmental Information (NCEI)'"/>
+	<xsl:variable name="publisherName"  select="'National Centers for Environmental Information (NCEI)'"/>
 	<xsl:variable name="publisherURL"  select="'https://www.ncei.noaa.gov/'"/>
 	<xsl:variable name="publisherEmail"  select="'NCEI.info@noaa.gov'"/>
 	<xsl:variable name="publisherTotal"  select="'3'"/>
-	<xsl:variable name="publisherMax">3</xsl:variable>
 
-	<!-- Data responsible party -->
-	<xsl:variable name="responsiblePartyCnt" select="'3'"/>
-	<xsl:variable name="responsiblePartyTotal" select="$creatorTotal + $contributorTotal + $publisherTotal"/>
-	<xsl:variable name="responsiblePartyMax">14</xsl:variable>
 	<!-- Other Fields: 2 possible -->
 	<xsl:variable name="cdmType" select="netcdf/attribute[@name='cdm_data_type']/@value"/>
-	<xsl:variable name="processingLevel" select="netcdf/attribute[@name='processing_level']/@value"/>
 	<xsl:variable name="license" select="netcdf/attribute[@name='license']/@value"/>
-	<xsl:variable name="otherTotal" select="count($cdmType) + count($processingLevel) + count($license)"/>
-	<xsl:variable name="otherMax">3</xsl:variable>
-	<!--xsl:variable name="spiralTotal" select="$extentTotal + $otherExtentTotal + $otherTotal + $responsiblePartyTotal"/-->
-	<xsl:variable name="spiralMax" select="$otherMax + $creatorMax + $extentMax + $responsiblePartyMax"/>
-	<!--                        -->
-
 
 	<!--    Write ISO Metadata  -->
 
 	<xsl:template match="/">
-		<gmi:MI_Metadata>
-      <xsl:attribute name="xsi:schemaLocation">
-        <xsl:value-of select="'http://www.isotc211.org/2005/gmi http://www.ngdc.noaa.gov/metadata/published/xsd/schema.xsd'"/>
-      </xsl:attribute>
+		<gmi:MI_Metadata xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gsr="http://www.isotc211.org/2005/gsr" xmlns:gss="http://www.isotc211.org/2005/gss" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:gmi="http://www.isotc211.org/2005/gmi" xmlns:gmx="http://www.isotc211.org/2005/gmx" xsi:schemaLocation="http://www.isotc211.org/2005/gmi http://www.ngdc.noaa.gov/metadata/published/xsd/schema.xsd">
 			<gmd:fileIdentifier>
 				<xsl:call-template name="writeCharacterString">
 					<xsl:with-param name="stringToWrite" select="concat($datasetname,'.',$title)"/>
 				</xsl:call-template>
 			</gmd:fileIdentifier>
 			<gmd:language>
-				<xsl:call-template name="writeCodelist">
-					<xsl:with-param name="codeListName" select="'gmd:LanguageCode'"/>
-					<xsl:with-param name="codeListValue" select="'eng'"/>
-				</xsl:call-template>
+				<gco:CharacterString>eng; USA</gco:CharacterString>
 			</gmd:language>
 			<gmd:characterSet>
-				<xsl:call-template name="writeCodelist">
-					<xsl:with-param name="codeListName" select="'gmd:MD_CharacterSetCode'"/>
-					<xsl:with-param name="codeListValue" select="'UTF8'"/>
-				</xsl:call-template>
+				<gmd:MD_CharacterSetCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</gmd:MD_CharacterSetCode>
 			</gmd:characterSet>
+			<gmd:parentIdentifier>
+				<gco:CharacterString>WOA13</gco:CharacterString>
+			</gmd:parentIdentifier>
 			<gmd:hierarchyLevel>
-				<xsl:call-template name="writeCodelist">
-					<xsl:with-param name="codeListName" select="'gmd:MD_ScopeCode'"/>
-					<xsl:with-param name="codeListValue" select="'dataset'"/>
-				</xsl:call-template>
+				<gmd:MD_ScopeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
 			</gmd:hierarchyLevel>
-			<xsl:if test="$serviceTotal">
-				<gmd:hierarchyLevel>
-					<xsl:call-template name="writeCodelist">
-						<xsl:with-param name="codeListName" select="'gmd:MD_ScopeCode'"/>
-						<xsl:with-param name="codeListValue" select="'service'"/>
-					</xsl:call-template>
-				</gmd:hierarchyLevel>
-			</xsl:if>
 			<!-- metadata contact is creator -->
 			<xsl:call-template name="writeResponsibleParty">
         <xsl:with-param name="tagName" select="'gmd:contact'"/>
         <xsl:with-param name="testValue" select="1"/>
         <xsl:with-param name="individualName" select="'NCEI User Service'"/>
-        <xsl:with-param name="organisationName" select="'NOAA National Centers for Envrionmental Information'"/>
+        <xsl:with-param name="organisationName" select="'NOAA National Centers for Environmental Information'"/>
         <xsl:with-param name="email" select="'NCEI.info@noaa.gov'"/>
         <xsl:with-param name="url" select="'https://www.ncei.noaa.gov/'"/>
         <xsl:with-param name="roleCode" select="'pointOfContact'"/>			</xsl:call-template>
@@ -194,16 +142,16 @@
 				</gco:Date>
 			</gmd:dateStamp>
 			<gmd:metadataStandardName>
-				<gco:CharacterString>ISO 19115-2 Geographic Information - Metadata Part 2 Extensions for imagery and gridded data</gco:CharacterString>
+				<gco:CharacterString>ISO 19115-2 Geographic Information - Metadata - Part 2: Extensions for Imagery and Gridded Data</gco:CharacterString>
 			</gmd:metadataStandardName>
 			<gmd:metadataStandardVersion>
 				<gco:CharacterString>ISO 19115-2:2009(E)</gco:CharacterString>
 			</gmd:metadataStandardVersion>
-			<gmd:dataSetURI>
+			<!-- <gmd:dataSetURI>
 				<gco:CharacterString>
 				String of the data set URI
 				</gco:CharacterString>
-			</gmd:dataSetURI>
+			</gmd:dataSetURI> -->
 
 			<gmd:spatialRepresentationInfo>
 				<xsl:choose>
@@ -470,67 +418,28 @@
 							</gmd:MD_LegalConstraints>
 						</gmd:resourceConstraints>
 					</xsl:if>
-					<xsl:if test="count($project)">
-						<gmd:aggregationInfo>
-							<gmd:MD_AggregateInformation>
-								<gmd:aggregateDataSetName>
-									<gmd:CI_Citation>
-										<gmd:title>
-											<gco:CharacterString>
-												<xsl:value-of select="$project[1]"/>
-											</gco:CharacterString>
-										</gmd:title>
-										<gmd:date gco:nilReason="inapplicable"/>
-									</gmd:CI_Citation>
-								</gmd:aggregateDataSetName>
-								<gmd:associationType>
-                  					<gmd:DS_AssociationTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#DS_AssociationTypeCode" codeListValue="largerWorkCitation">
-										<xsl:value-of select="'largerWorkCitation'"/>
-									</gmd:DS_AssociationTypeCode>
-								</gmd:associationType>
-								<gmd:initiativeType>
-                  					<gmd:DS_InitiativeTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#DS_InitiativeTypeCode" codeListValue="project">
-										<xsl:value-of select="'project'"/>
-									</gmd:DS_InitiativeTypeCode>
-								</gmd:initiativeType>
-							</gmd:MD_AggregateInformation>
-						</gmd:aggregationInfo>
-					</xsl:if>
-					<xsl:if test="count($cdmType)">
-						<gmd:aggregationInfo>
-							<gmd:MD_AggregateInformation>
-								<gmd:aggregateDataSetIdentifier>
-									<gmd:MD_Identifier>
-										<gmd:authority>
-											<gmd:CI_Citation>
-												<gmd:title>
-													<gco:CharacterString>Unidata Common Data Model</gco:CharacterString>
-												</gmd:title>
-												<gmd:date gco:nilReason="inapplicable"/>
-											</gmd:CI_Citation>
-										</gmd:authority>
-										<gmd:code>
-											<gco:CharacterString>
-												<xsl:value-of select="$cdmType[1]"/>
-											</gco:CharacterString>
-										</gmd:code>
-									</gmd:MD_Identifier>
-								</gmd:aggregateDataSetIdentifier>
-								<gmd:associationType>
-                  				<gmd:DS_AssociationTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#DS_AssociationTypeCode" codeListValue="largerWorkCitation">
-										<xsl:value-of select="'largerWorkCitation'"/>
-									</gmd:DS_AssociationTypeCode>
-								</gmd:associationType>
-								<gmd:initiativeType>
-                  					<gmd:DS_InitiativeTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#DS_InitiativeTypeCode" codeListValue="project">
-										<xsl:value-of select="'project'"/>
-									</gmd:DS_InitiativeTypeCode>
-								</gmd:initiativeType>
-							</gmd:MD_AggregateInformation>
-						</gmd:aggregationInfo>
-					</xsl:if>
+					<gmd:resourceConstraints>
+					    <gmd:MD_LegalConstraints>
+					        <gmd:useConstraints>
+					            <gmd:MD_RestrictionCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions" codeSpace="008">other Restrictions</gmd:MD_RestrictionCode>
+					        </gmd:useConstraints>
+					        <gmd:otherConstraints>
+					            <gco:CharacterString>Use liability: NOAA and NCEI cannot provide any warranty as to the accuracy, reliability, or completeness of furnished data. Users assume responsibility to determine the usability of these data. The user is responsible for the results of any application of this data for other than its intended purpose.</gco:CharacterString>
+					        </gmd:otherConstraints>
+					    </gmd:MD_LegalConstraints>
+					</gmd:resourceConstraints>
+					<gmd:resourceConstraints>
+					    <gmd:MD_LegalConstraints>
+					        <gmd:accessConstraints>
+					            <gmd:MD_RestrictionCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions" codeSpace="008">other Restrictions</gmd:MD_RestrictionCode>
+					        </gmd:accessConstraints>
+					        <gmd:otherConstraints>
+					            <gco:CharacterString>Distribution liability: NOAA and NCEI make no warranty, expressed or implied, regarding these data, nor does the fact of distribution constitute such a warranty. NOAA and NCEI cannot assume liability for any damages caused by any errors or omissions in these data. If appropriate, NCEI can only certify that the data it distributes are an authentic copy of the records that were accepted for inclusion in the NCEI archives.</gco:CharacterString>
+					        </gmd:otherConstraints>
+					    </gmd:MD_LegalConstraints>
+					</gmd:resourceConstraints>
 					<gmd:language>
-						<gco:CharacterString>eng</gco:CharacterString>
+						<gco:CharacterString>eng; USA</gco:CharacterString>
 					</gmd:language>
 					<gmd:topicCategory>
 						<gmd:MD_TopicCategoryCode>climatologyMeteorologyAtmosphere</gmd:MD_TopicCategoryCode>
@@ -886,15 +795,6 @@
 					</gmd:DQ_DataQuality>
 				</gmd:dataQualityInfo>
 			</xsl:if>
-			<gmd:metadataMaintenance>
-				<gmd:MD_MaintenanceInformation>
-					<gmd:maintenanceAndUpdateFrequency gco:nilReason="unknown"/>
-					<gmd:maintenanceNote>
-						<gco:CharacterString>This record was translated from NcML using UnidataDD2MI-nodcmodified.xsl Version <xsl:value-of select="$stylesheetVersion"/>
-						</gco:CharacterString>
-					</gmd:maintenanceNote>
-				</gmd:MD_MaintenanceInformation>
-			</gmd:metadataMaintenance>
 		</gmi:MI_Metadata>
 	</xsl:template>
 	<xsl:template name="writeCodelist">
@@ -967,6 +867,8 @@
 			</xsl:choose>
 		</xsl:if>
 	</xsl:template>
+
+<!-- "writeResponsibleParty" template definition -->
 	<xsl:template name="writeResponsibleParty">
 		<xsl:param name="tagName"/>
 		<xsl:param name="testValue"/>
@@ -981,11 +883,6 @@
 			<xsl:when test="$testValue">
 				<xsl:element name="{$tagName}">
 					<gmd:CI_ResponsibleParty>
-						<gmd:individualName>
-							<xsl:call-template name="writeCharacterString">
-								<xsl:with-param name="stringToWrite" select="$individualName"/>
-							</xsl:call-template>
-						</gmd:individualName>
 						<gmd:organisationName>
 							<xsl:call-template name="writeCharacterString">
 								<xsl:with-param name="stringToWrite" select="$organisationName"/>
@@ -1006,7 +903,7 @@
 												</gmd:CI_Address>
 											</gmd:address>
 										</xsl:if>
-										<xsl:if test="$url">
+									<!--	<xsl:if test="$url">
 											<gmd:onlineResource>
 												<gmd:CI_OnlineResource>
 													<gmd:linkage>
@@ -1034,6 +931,7 @@
 												</gmd:CI_OnlineResource>
 											</gmd:onlineResource>
 										</xsl:if>
+									-->	
 									</gmd:CI_Contact>
 								</xsl:when>
 								<xsl:otherwise>
@@ -1090,7 +988,7 @@ DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, N
 <gco:CharacterString>USA</gco:CharacterString>
 </gmd:country>
 <gmd:electronicMailAddress>
-<gco:CharacterString>NODC.DataOfficer@noaa.gov</gco:CharacterString>
+<gco:CharacterString>NCEI.info@noaa.gov</gco:CharacterString>
 </gmd:electronicMailAddress>
 </gmd:CI_Address>
 </gmd:address>
@@ -1130,6 +1028,7 @@ Main NCEI website providing links to access data and data services.
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
+
 	<xsl:template name="writeDimension">
 		<xsl:param name="dimensionName"/>
 		<xsl:param name="dimensionType"/>
